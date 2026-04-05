@@ -78,6 +78,17 @@ This graph shows the learning progress of the Q-learning agent.
 
 ---
 
+## 🎥 Sample Output
+
+Example of traffic signal decisions made by the agent:
+
+Lane 0: 🚗🚗🚗
+Lane 1: 🚗🚗🚗🚗 ← GREEN
+Lane 2: 🚗🚗
+Lane 3: 🚗🚗🚗🚗🚗
+
+---
+
 ## 🚀 Key Features
 
 * Adaptive traffic signal control
