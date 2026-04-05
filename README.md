@@ -1,5 +1,10 @@
 # 🚦 Smart Traffic Signal Optimization using Reinforcement Learning
 
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Reinforcement Learning](https://img.shields.io/badge/RL-Q--Learning-green)
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
+
+
 ## 📌 Problem Statement
 
 Urban traffic congestion leads to:
