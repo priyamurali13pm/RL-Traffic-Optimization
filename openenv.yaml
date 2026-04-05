@@ -1,0 +1,18 @@
+name: traffic-env
+version: 1.0
+
+environment:
+  observation_space:
+    type: discrete
+    size: 4   # number of lanes
+
+  action_space:
+    type: discrete
+    size: 4   # choose which lane to clear
+
+reward:
+  type: custom
+
+termination:
+  condition: step_limit
+  max_steps: 50
