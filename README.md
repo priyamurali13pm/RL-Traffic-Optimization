@@ -66,11 +66,13 @@ This ensures the model learns **efficient and realistic traffic control behavior
 👉 The Q-learning agent outperforms a random baseline, showing improved traffic efficiency.
 
 ---
+
 ## 📊 Training Visualization
 This graph shows the learning progress of the Q-learning agent.
 ![Training Curve](smoothed_plot.png)
 
 ---
+
 ## 🚀 Key Features
 
 * Adaptive traffic signal control
@@ -92,11 +94,12 @@ This graph shows the learning progress of the Q-learning agent.
 ## 📂 Project Structure
 
 ```
-main.py              # Runs training and evaluation
-q_learning.py        # Q-learning implementation
-openenv.yaml         # Environment config (if used)
-README.md
-```
+├── main.py              # Training + evaluation
+├── q_learning.py        # Q-learning agent
+├── README.md
+├── requirements.txt
+├── openenv.yaml
+├── smoothed_plot.png
 
 ---
 
@@ -105,8 +108,8 @@ README.md
 ### 1. Clone the repository
 
 ```
-git clone <your-repo-link>
-cd <your-project-folder>
+git clone <https://github.com/priyamurali13pm/RL-Traffic-Optimization>
+cd <D:\RL-Traffic-Optimization>
 ```
 
 ### 2. Run the project
