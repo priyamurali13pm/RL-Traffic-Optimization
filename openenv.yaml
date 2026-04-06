@@ -4,14 +4,15 @@ version: 1.0
 environment:
   observation_space:
     type: discrete
-    size: 4   # number of lanes
+    size: 81   # 3 levels per lane → 3^4 combinations
 
   action_space:
     type: discrete
-    size: 4   # choose which lane to clear
+    size: 4   # 4 lanes
 
 reward:
   type: custom
+  description: Reward is based on reduction in total traffic and penalizes congestion
 
 termination:
   condition: step_limit
