@@ -1,12 +1,12 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Request
 
 app = FastAPI()
 
-class Action(BaseModel):
-    action: int
+@app.get("/")
+def root():
+    return {"message": "OpenEnv running"}
 
-# Support BOTH GET and POST
+# Reset endpoint (NO body required)
 @app.api_route("/reset", methods=["GET", "POST"])
 def reset():
     return {
@@ -14,9 +14,9 @@ def reset():
         "info": {}
     }
 
-# Support BOTH GET and POST
+# Step endpoint (no strict schema)
 @app.api_route("/step", methods=["GET", "POST"])
-def step(action: Action = None):
+async def step(request: Request):
     return {
         "observation": [1, 2, 3, 4],
         "reward": 1.0,
