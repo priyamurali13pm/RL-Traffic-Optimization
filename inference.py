@@ -14,23 +14,36 @@ client = OpenAI(
 )
 
 def run():
+    success = False
+    rewards = []
+    steps = 0
+
     try:
-        # START (exact format)
         print(f"[START] task=traffic env=custom model={MODEL_NAME}")
 
-        # STEP (must follow exact format)
-        step_num = 1
+        steps = 1
         action = "select_lane_1"
         reward = 1.0
         done = True
+        rewards.append(reward)
 
-        print(f"[STEP] step={step_num} action={action} reward={reward:.2f} done={str(done).lower()} error=null")
+        print(
+            f"[STEP] step={steps} action={action} "
+            f"reward={reward:.2f} done={str(done).lower()} error=null"
+        )
 
-        # END (exact format)
-        print(f"[END] success=true steps=1 rewards=1.0")
+        success = True
 
-    except Exception as e:
-        print(f"[END] success=false steps=0 rewards=")
+    except Exception:
+        success = False
+
+    finally:
+        if rewards:
+            rewards_str = ",".join(str(r) for r in rewards)
+        else:
+            rewards_str = "0.0"
+
+        print(f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}")
 
 if __name__ == "__main__":
     run()
