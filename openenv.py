@@ -1,46 +1,26 @@
-from fastapi import FastAPI, Request
+class Env:
+    def __init__(self):
+        self.state = [0, 0, 0, 0]
+        self.steps = 0
 
-app = FastAPI()
+    def reset(self):
+        self.state = [0, 0, 0, 0]
+        self.steps = 0
 
-# Root (important for health check)
-@app.get("/")
-def root():
-    return {"status": "ok"}
+        return {
+            "observation": self.state,
+            "info": {}
+        }
 
-# RESET endpoint (must accept ANYTHING)
-@app.post("/reset")
-async def reset(request: Request):
-    return {
-        "observation": [0, 0, 0, 0],
-        "info": {}
-    }
+    def step(self, action):
+        self.steps += 1
 
-# ALSO support GET (backup)
-@app.get("/reset")
-def reset_get():
-    return {
-        "observation": [0, 0, 0, 0],
-        "info": {}
-    }
+        self.state = [1, 2, 3, 4]
 
-# STEP endpoint
-@app.post("/step")
-async def step(request: Request):
-    return {
-        "observation": [1, 2, 3, 4],
-        "reward": 1.0,
-        "terminated": False,
-        "truncated": False,
-        "info": {}
-    }
-
-# ALSO support GET
-@app.get("/step")
-def step_get():
-    return {
-        "observation": [1, 2, 3, 4],
-        "reward": 1.0,
-        "terminated": False,
-        "truncated": False,
-        "info": {}
-    }
+        return {
+            "observation": self.state,
+            "reward": 1.0,
+            "terminated": self.steps >= 50,
+            "truncated": False,
+            "info": {}
+        }
