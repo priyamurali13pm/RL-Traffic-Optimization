@@ -1,7 +1,10 @@
 class Env:
+    def __init__(self):
+        self.state = [0, 0, 0, 0]
+
     def reset(self):
         return {
-            "observation": [0, 0, 0, 0],
+            "observation": self.state,
             "info": {}
         }
 
