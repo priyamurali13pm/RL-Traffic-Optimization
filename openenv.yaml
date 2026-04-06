@@ -1,18 +1,21 @@
 name: traffic-env
 version: 1.0
 
+endpoints:
+  reset: /reset
+  step: /step
+
 environment:
   observation_space:
     type: discrete
-    size: 81   # 3 levels per lane → 3^4 combinations
+    size: 81
 
   action_space:
     type: discrete
-    size: 4   # 4 lanes
+    size: 4
 
 reward:
   type: custom
-  description: Reward is based on reduction in total traffic and penalizes congestion
 
 termination:
   condition: step_limit
