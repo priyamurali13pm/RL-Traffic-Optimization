@@ -4,6 +4,17 @@
 ![Reinforcement Learning](https://img.shields.io/badge/RL-Q--Learning-green)
 ![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
 
+## 🚦 RL Traffic Signal Optimization
+
+A Reinforcement Learning-based system that optimizes traffic signals using Q-learning to reduce congestion.
+
+🔗 **Live Demo:** https://priyamurali13pm-rl-traffic-optimization.hf.space
+
+## 🚀 Live Demo
+
+👉 Click the link and press **Generate** to run the simulation.
+
+---
 
 ## 📌 Problem Statement
 
@@ -82,11 +93,12 @@ This graph shows the learning progress of the Q-learning agent.
 
 Example of traffic signal decisions made by the agent:
 
+```
 Lane 0: 🚗🚗🚗
 Lane 1: 🚗🚗🚗🚗 ← GREEN
 Lane 2: 🚗🚗
 Lane 3: 🚗🚗🚗🚗🚗
-
+```
 ---
 
 ## 🚀 Key Features
