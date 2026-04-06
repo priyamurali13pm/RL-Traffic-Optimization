@@ -1,11 +1,9 @@
 name: traffic-env
 version: 1.0
 
-endpoints:
-  reset: /reset
-  step: /step
-
 environment:
+  entry_point: openenv:TrafficEnv
+
   observation_space:
     type: discrete
     size: 81
@@ -13,10 +11,3 @@ environment:
   action_space:
     type: discrete
     size: 4
-
-reward:
-  type: custom
-
-termination:
-  condition: step_limit
-  max_steps: 50

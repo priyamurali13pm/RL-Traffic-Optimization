@@ -1,26 +1,27 @@
-from fastapi import FastAPI, Request
+class TrafficEnv:
+    def __init__(self):
+        self.state = [0, 0, 0, 0]
+        self.step_count = 0
+        self.max_steps = 50
 
-app = FastAPI()
+    def reset(self):
+        self.state = [0, 0, 0, 0]
+        self.step_count = 0
+        return {
+            "observation": self.state,
+            "info": {}
+        }
 
-@app.get("/")
-def root():
-    return {"message": "OpenEnv running"}
+    def step(self, action):
+        self.step_count += 1
 
-# Reset endpoint (NO body required)
-@app.api_route("/reset", methods=["GET", "POST"])
-def reset():
-    return {
-        "observation": [0, 0, 0, 0],
-        "info": {}
-    }
+        # dummy transition
+        self.state = [1, 2, 3, 4]
 
-# Step endpoint (no strict schema)
-@app.api_route("/step", methods=["GET", "POST"])
-async def step(request: Request):
-    return {
-        "observation": [1, 2, 3, 4],
-        "reward": 1.0,
-        "terminated": False,
-        "truncated": False,
-        "info": {}
-    }
+        return {
+            "observation": self.state,
+            "reward": 1.0,
+            "terminated": self.step_count >= self.max_steps,
+            "truncated": False,
+            "info": {}
+        }
