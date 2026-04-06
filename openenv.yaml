@@ -1,13 +1,2 @@
 name: traffic-env
 version: 1.0
-
-environment:
-  entry_point: openenv:TrafficEnv
-
-  observation_space:
-    type: discrete
-    size: 81
-
-  action_space:
-    type: discrete
-    size: 4

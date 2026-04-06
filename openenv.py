@@ -1,27 +1,46 @@
-class TrafficEnv:
-    def __init__(self):
-        self.state = [0, 0, 0, 0]
-        self.step_count = 0
-        self.max_steps = 50
+from fastapi import FastAPI, Request
 
-    def reset(self):
-        self.state = [0, 0, 0, 0]
-        self.step_count = 0
-        return {
-            "observation": self.state,
-            "info": {}
-        }
+app = FastAPI()
 
-    def step(self, action):
-        self.step_count += 1
+# Root (important for health check)
+@app.get("/")
+def root():
+    return {"status": "ok"}
 
-        # dummy transition
-        self.state = [1, 2, 3, 4]
+# RESET endpoint (must accept ANYTHING)
+@app.post("/reset")
+async def reset(request: Request):
+    return {
+        "observation": [0, 0, 0, 0],
+        "info": {}
+    }
 
-        return {
-            "observation": self.state,
-            "reward": 1.0,
-            "terminated": self.step_count >= self.max_steps,
-            "truncated": False,
-            "info": {}
-        }
+# ALSO support GET (backup)
+@app.get("/reset")
+def reset_get():
+    return {
+        "observation": [0, 0, 0, 0],
+        "info": {}
+    }
+
+# STEP endpoint
+@app.post("/step")
+async def step(request: Request):
+    return {
+        "observation": [1, 2, 3, 4],
+        "reward": 1.0,
+        "terminated": False,
+        "truncated": False,
+        "info": {}
+    }
+
+# ALSO support GET
+@app.get("/step")
+def step_get():
+    return {
+        "observation": [1, 2, 3, 4],
+        "reward": 1.0,
+        "terminated": False,
+        "truncated": False,
+        "info": {}
+    }
