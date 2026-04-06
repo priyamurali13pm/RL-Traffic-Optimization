@@ -177,5 +177,23 @@ Aspiring Data Scientist
 
 This project demonstrates how **Reinforcement Learning can improve real-world traffic systems** by making them adaptive and intelligent.
 
+## 🤖 Inference Pipeline (Hackathon Requirement)
+
+This project includes a structured `inference.py` script for evaluation.
+
+- Uses environment variables: `API_BASE_URL`, `MODEL_NAME`, `HF_TOKEN`
+- Follows required output format: `[START] → [STEP] → [END]`
+- Compatible with automated grading systems
+
+### Sample Output
+
+```
+[START]
+[STEP] Initializing RL Traffic Simulation
+[STEP] LLM call completed
+[END]
+{"message": "RL traffic optimization simulation executed successfully"}
+```
+
 
 
