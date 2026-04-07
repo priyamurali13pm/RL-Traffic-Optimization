@@ -39,29 +39,24 @@ class Env:
         return self.task
 
     def step(self, action):
-        # Ensure action is string
-        if not isinstance(action, str):
-            return self.task, float(-1), True, {}
+        action_str = str(action)
 
         reward = 0.0
 
-        # VERY EASY REWARD CONDITIONS
-        if len(action) > 5:
-            reward += 1.0
-
-        if "```" in action:
-            reward += 1.0
-
-        if "def" in action:
-            reward += 1.0
-
-        # 🚨 GUARANTEE NON-ZERO REWARD
-        if reward == 0.0:
+        # simulate simple traffic logic
+        if "lane_1" in action_str:
             reward = 1.0
+        elif "lane_2" in action_str:
+            reward = 0.8
+        else:
+            reward = 0.5  # still positive
 
-        done = True
-
-        return self.task, float(reward), done, {}
+        return {
+            "observation": self.task,
+            "reward": float(reward),
+            "terminated": True,
+            "info": {}
+        }
 # Initialize
 agent = QLearningAgent(state_size=NUM_LANES, action_size=NUM_LANES)
 
