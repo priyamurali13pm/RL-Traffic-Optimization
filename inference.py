@@ -1,6 +1,6 @@
 from openai import OpenAI
 import os
-print("FILE STARTED")
+
 
 API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")

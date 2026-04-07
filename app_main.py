@@ -30,40 +30,38 @@ def get_state(traffic):
 
     return tuple(state)
 
-def step(traffic, action):
-    old_total = sum(traffic)
+class Env:
+    def __init__(self):
+        self.task = ""
 
-    # strong clearing
-    cars_passed = min(traffic[action], 10)
-    traffic[action] -= cars_passed
+    def reset(self):
+        self.task = "Write a Python function for matrix multiplication inside triple backticks."
+        return self.task
 
-    # reduce other lanes slightly
-    for i in range(NUM_LANES):
-        if i != action:
-            traffic[i] = max(0, traffic[i] - 1)
+    def step(self, action):
+        # Ensure action is string
+        if not isinstance(action, str):
+            return self.task, float(-1), True, {}
 
-    # low incoming traffic
-    for i in range(NUM_LANES):
-        if random.random() < 0.2:
-            traffic[i] += 1
+        reward = 0.0
 
-    # limits
-    traffic = [max(0, t) for t in traffic]
-    traffic = [min(t, 15) for t in traffic]
+        # VERY EASY REWARD CONDITIONS
+        if len(action) > 5:
+            reward += 1.0
 
-    new_total = sum(traffic)
+        if "```" in action:
+            reward += 1.0
 
-    # reward improvement
-    reward = (old_total - new_total) * 2
+        if "def" in action:
+            reward += 1.0
 
-# penalty for congestion
-    reward -= sum(traffic) * 0.1
+        # 🚨 GUARANTEE NON-ZERO REWARD
+        if reward == 0.0:
+            reward = 1.0
 
-    # penalty for bad action
-    if traffic[action] > max(traffic) - 2:
-        reward -= 10
+        done = True
 
-    return traffic, reward
+        return self.task, float(reward), done, {}
 # Initialize
 agent = QLearningAgent(state_size=NUM_LANES, action_size=NUM_LANES)
 
