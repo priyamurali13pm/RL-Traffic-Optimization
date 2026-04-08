@@ -33,10 +33,11 @@ class QLearningAgent:
         best_next = np.max(self.q_table[next_state])
 
         # ✅ FIXED LINE
-        self.q_table[state][action] += self.alpha * (
-            reward + self.gamma * best_next - self.q_table[state][action]
-        )
+        #self.q_table[state][action] += self.alpha * (
+        #    reward + self.gamma * best_next - self.q_table[state][action]
+        #)
 
     def decay_epsilon(self):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+

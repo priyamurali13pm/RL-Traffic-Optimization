@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import time
 from q_learning import QLearningAgent
 
+
 def display_traffic(traffic, action):
     print("\n--- Traffic State ---")
     
@@ -12,54 +13,33 @@ def display_traffic(traffic, action):
         marker = " ← GREEN" if i == action else ""
         print(f"Lane {i}: {cars}{marker}")
 
-# Environment
 NUM_LANES = 4
 MAX_CARS = 10
 
 def get_state(traffic):
-    # convert to LOW / MEDIUM / HIGH
-    state = []
+    return tuple(traffic)
+
+def step(traffic, action):
+    # cars pass in selected lane
+    cars_passed = min(traffic[action], 1)
+    traffic[action] -= cars_passed
+
+    # new cars arrive randomly
+    for i in range(NUM_LANES):
+        traffic[i] += random.randint(2, 4)
+
+
+    # reward = less total traffic is better
+    traffic = [max(0, t) for t in traffic]
+    traffic = [min(t, 20) for t in traffic]
+
+    reward = -(sum(traffic) - (max(traffic)) * 3)
+    reward += -1
     
-    for t in traffic:
-        if t < 5:
-            state.append(0)   # LOW
-        elif t < 10:
-            state.append(1)   # MEDIUM
-        else:
-            state.append(2)   # HIGH
+    return traffic, reward
 
-    return tuple(state)
-
-class Env:
-    def __init__(self):
-        self.task = ""
-
-    def reset(self):
-        self.task = "Write a Python function for matrix multiplication inside triple backticks."
-        return self.task
-
-    def step(self, action):
-        action_str = str(action)
-
-        reward = 0.0
-
-        # simulate simple traffic logic
-        if "lane_1" in action_str:
-            reward = 1.0
-        elif "lane_2" in action_str:
-            reward = 0.8
-        else:
-            reward = 0.5  # still positive
-
-        return {
-            "observation": self.task,
-            "reward": float(reward),
-            "terminated": True,
-            "info": {}
-        }
 # Initialize
 agent = QLearningAgent(state_size=NUM_LANES, action_size=NUM_LANES)
-
 
 
 # Training
@@ -142,6 +122,7 @@ score = max(0, min(score, 1))  # keep between 0 and 1
 print("Score (0-1):", score)
 
 smoothed = np.convolve(episode_rewards, np.ones(50)/50, mode='valid')
+
 
 plt.figure()
 plt.plot(smoothed)
