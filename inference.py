@@ -1,19 +1,6 @@
-from openai import OpenAI
-import os
+import requests
 
-
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
-HF_TOKEN = os.getenv("HF_TOKEN")
-
-if HF_TOKEN is None:
-     HF_TOKEN = "dummy"
-    #raise ValueError("HF_TOKEN environment variable is required")
-
-client = OpenAI(
-    base_url=API_BASE_URL,
-    api_key=HF_TOKEN
-)
+BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
 
 def run():
     success = False
@@ -21,39 +8,47 @@ def run():
     steps = 0
 
     try:
-        print(f"[START] task=traffic env=custom model={MODEL_NAME}")
+        print("[START] task=traffic env=api")
 
-        # 👉 IMPORT ENV HERE
-        from openenv import Env
+        # RESET environment
+        res = requests.post(f"{BASE_URL}/reset")
+        data = res.json()
+        state = data["observation"]
 
-        env = Env()
+        total_steps = 5
 
-        # 👉 RESET CALLED HERE (IMPORTANT)
-        state = env.reset()
+        for step in range(1, total_steps + 1):
+            # 🔥 simple action (you can improve later)
+            action = state.index(max(state)) 
 
-        steps = 1
-        action = 1
+            res = requests.post(f"{BASE_URL}/step?action={action}")
+            data = res.json()
+            print("DEBUG STEP RESPONSE:", data)
 
-        result = env.step(action)
+            reward = data.get("reward", 0)
+            done = data.get("done", False)
 
-        reward = result["reward"]
-        done = result["terminated"]
+            rewards.append(reward)
+            steps = step
 
-        rewards.append(reward)
+            print(
+                f"[STEP] step={step} action=lane_{action} "
+                f"reward={reward:.2f} done={str(done).lower()} error=null"
+            )
 
-        print(
-            f"[STEP] step={steps} action=lane_{action} "
-            f"reward={reward:.2f} done={str(done).lower()} error=null"
-        )
+            if done:
+                break
 
         success = True
 
     except Exception as e:
+        print(f"[ERROR] {e}")
         success = False
 
     finally:
         rewards_str = ",".join(str(r) for r in rewards) if rewards else "0.0"
         print(f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}")
 
+
 if __name__ == "__main__":
-    run()        
+    run()
