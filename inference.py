@@ -1,16 +1,14 @@
-import urllib.request   
+import urllib.request
 import json
 import os
+import re
 from openai import OpenAI
 
-# LLM setup
-base_url = os.environ.get("API_BASE_URL")
-api_key = os.environ.get("API_KEY")
-
-if base_url and api_key:
-    client = OpenAI(base_url=base_url, api_key=api_key)
-else:
-    client = None 
+# 🔥 STRICT LLM SETUP (NO .get, NO fallback)
+client = OpenAI(
+    base_url=os.environ["API_BASE_URL"],
+    api_key=os.environ["API_KEY"]
+)
 
 BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
 
@@ -20,11 +18,8 @@ def post_request(url):
     with urllib.request.urlopen(req) as response:
         return json.loads(response.read().decode())
 
-# LLM decision
+# LLM decision (MANDATORY)
 def get_action(state):
-    if client is None:
-        return state.index(max(state))  # fallback
-
     prompt = f"""
     You are a traffic controller.
     Traffic in lanes: {state}
@@ -38,53 +33,41 @@ def get_action(state):
         temperature=0
     )
 
-    return int(response.choices[0].message.content.strip())
+    output = response.choices[0].message.content
+    action = int(re.findall(r'\d+', output)[0])
+
+    return action
 
 def run():
-    success = False
-    rewards = []
-    steps = 0
+    print("[START] task=traffic", flush=True)
 
     try:
-        print("[START] task=traffic env=api")
-
         # RESET
         data = post_request(f"{BASE_URL}/reset")
         state = data["observation"]
-        print("RESET RESPONSE:", data)
 
-        total_steps = 5
+        total_reward = 0
+        steps = 5
 
-        for step in range(1, total_steps + 1):
-            action = get_action(state)  
+        for step in range(1, steps + 1):
+            action = get_action(state)
 
             data = post_request(f"{BASE_URL}/step?action={action}")
-            print("DEBUG STEP RESPONSE:", data)
 
             reward = data.get("reward", 0)
-            done = data.get("done", False)
             state = data.get("observation", state)
 
-            rewards.append(reward)
-            steps = step
+            total_reward += reward
 
-            print(
-                f"[STEP] step={step} action=lane_{action} "
-                f"reward={reward:.2f} done={str(done).lower()} error=null"
-            )
+            print(f"[STEP] step={step} reward={reward}", flush=True)
 
-            if done:
-                break
+        # score normalization
+        score = max(0, min(1, (total_reward + 100) / 100))
 
-        success = True
+        print(f"[END] task=traffic score={score} steps={steps}", flush=True)
 
     except Exception as e:
-        print(f"[ERROR] {e}")
-        success = False
-
-    finally:
-        rewards_str = ",".join(str(r) for r in rewards) if rewards else "0.0"
-        print(f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}")
+        print(f"[END] task=traffic score=0 steps=0", flush=True)
 
 
 if __name__ == "__main__":
