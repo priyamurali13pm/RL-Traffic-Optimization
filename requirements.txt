@@ -1,7 +1,3 @@
-openai
+requests
 numpy
-matplotlib
-os
-time
-QLearningAgent
-random
+pandas

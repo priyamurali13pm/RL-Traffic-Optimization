@@ -1,6 +1,12 @@
-import requests
+import urllib.request
+import json
 
 BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
+
+def post_request(url):
+    req = urllib.request.Request(url, method="POST")
+    with urllib.request.urlopen(req) as response:
+        return json.loads(response.read().decode())
 
 def run():
     success = False
@@ -10,23 +16,21 @@ def run():
     try:
         print("[START] task=traffic env=api")
 
-        # RESET environment
-        res = requests.post(f"{BASE_URL}/reset")
-        data = res.json()
+        # RESET
+        data = post_request(f"{BASE_URL}/reset")
         state = data["observation"]
 
         total_steps = 5
 
         for step in range(1, total_steps + 1):
-            # 🔥 simple action (you can improve later)
-            action = state.index(max(state)) 
+            action = state.index(max(state))
 
-            res = requests.post(f"{BASE_URL}/step?action={action}")
-            data = res.json()
+            data = post_request(f"{BASE_URL}/step?action={action}")
             print("DEBUG STEP RESPONSE:", data)
 
             reward = data.get("reward", 0)
             done = data.get("done", False)
+            state = data.get("observation", state)
 
             rewards.append(reward)
             steps = step
