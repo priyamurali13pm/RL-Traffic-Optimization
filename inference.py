@@ -1,4 +1,4 @@
-import urllib.request   # ✅ ADD THIS (you missed it)
+import urllib.request   
 import json
 import os
 from openai import OpenAI
@@ -56,7 +56,7 @@ def run():
         total_steps = 5
 
         for step in range(1, total_steps + 1):
-            action = get_action(state)   # ✅ FIXED (was obs)
+            action = get_action(state)  
 
             data = post_request(f"{BASE_URL}/step?action={action}")
             print("DEBUG STEP RESPONSE:", data)
