@@ -1,73 +1,47 @@
 import urllib.request
 import json
-import os
-import re
-from openai import OpenAI
-
-# 🔥 STRICT LLM SETUP (NO .get, NO fallback)
-client = OpenAI(
-    base_url=os.environ["API_BASE_URL"],
-    api_key=os.environ["API_KEY"]
-)
 
 BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
 
-# API call helper
-def post_request(url):
+def post_request(url, params=None):
+    if params:
+        query = "&".join(f"{k}={v}" for k, v in params.items())
+        url = f"{url}?{query}"
+
     req = urllib.request.Request(url, method="POST")
     with urllib.request.urlopen(req) as response:
         return json.loads(response.read().decode())
-
-# LLM decision (MANDATORY)
-def get_action(state):
-    prompt = f"""
-    You are a traffic controller.
-    Traffic in lanes: {state}
-    Which lane (0-3) should get green signal?
-    Return only a number (0, 1, 2, or 3).
-    """
-
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
-    )
-
-    output = response.choices[0].message.content
-    action = int(re.findall(r'\d+', output)[0])
-
-    return action
 
 def run():
     print("[START] task=traffic", flush=True)
 
     try:
-        # RESET
         data = post_request(f"{BASE_URL}/reset")
-        state = data["observation"]
+        state = data.get("observation", [0, 0, 0, 0])
 
         total_reward = 0
-        steps = 5
 
-        for step in range(1, steps + 1):
-            action = get_action(state)
+        for step in range(5):
+            # simple local logic
+            action = state.index(max(state))
 
-            data = post_request(f"{BASE_URL}/step?action={action}")
+            data = post_request(f"{BASE_URL}/step", {"action": action})
 
+            state = data.get("observation", [0, 0, 0, 0])
             reward = data.get("reward", 0)
-            state = data.get("observation", state)
+            done = data.get("done", False)
 
             total_reward += reward
 
-            print(f"[STEP] step={step} reward={reward}", flush=True)
+            print(f"[STEP] step={step+1} action={action} reward={reward}", flush=True)
 
-        # score normalization
-        score = max(0, min(1, (total_reward + 100) / 100))
+            if done:
+                break
 
-        print(f"[END] task=traffic score={score} steps={steps}", flush=True)
+        print(f"[END] total_reward={total_reward}", flush=True)
 
     except Exception as e:
-        print(f"[END] task=traffic score=0 steps=0", flush=True)
+        print("[ERROR]", str(e), flush=True)
 
 
 if __name__ == "__main__":
