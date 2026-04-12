@@ -51,10 +51,10 @@ def run():
                 success = True
                 break
 
-        print(f"[END] success={str(success).lower()} steps={len(rewards_list)} rewards={','.join(rewards_list)}", flush=True)
+        print(f"[END] success={str(success).lower()} steps={len(rewards_list)} rewards={','.join(rewards_list)} error=null", flush=True)
 
     except Exception as e:
-        print(f"[END] success=false steps=0 rewards= error={str(e)}", flush=True)
+        print(f"[END] success=false steps=0 rewards=0.00 error={str(e)}", flush=True)
 
 
 if __name__ == "__main__":
