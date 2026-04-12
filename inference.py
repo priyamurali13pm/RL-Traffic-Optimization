@@ -1,17 +1,25 @@
 import urllib.request
+import urllib.request
+import urllib.parse
+import random
 import json
 
 BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
 
 def post_request(url, params=None):
     if params:
-        query = "&".join(f"{k}={v}" for k, v in params.items())
+        query = urllib.parse.urlencode(params)
         url = f"{url}?{query}"
 
     req = urllib.request.Request(url, method="POST")
-    with urllib.request.urlopen(req) as response:
-        return json.loads(response.read().decode())
 
+    try:
+        with urllib.request.urlopen(req) as response:
+            return json.loads(response.read().decode())
+
+    except urllib.error.HTTPError as e:
+        print("[SERVER ERROR BODY]", e.read().decode(), flush=True)
+        raise e
 def run():
     print("[START] task=traffic", flush=True)
 
@@ -20,10 +28,15 @@ def run():
         state = data.get("observation", [0, 0, 0, 0])
 
         total_reward = 0
+        epsilon = 0.15  # 🔥 define here
 
         for step in range(5):
-            # simple local logic
-            action = state.index(max(state))
+
+            # 🔥 REPLACE ONLY THIS PART
+            if random.random() < epsilon:
+                action = random.randint(0, len(state) - 1)
+            else:
+                action = int(state.index(max(state)))
 
             data = post_request(f"{BASE_URL}/step", {"action": action})
 
