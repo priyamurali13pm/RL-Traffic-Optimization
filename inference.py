@@ -1,10 +1,7 @@
 import urllib.request
-import urllib.request
 import urllib.parse
 import random
 import json
-import os
-import re
 
 BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
 
@@ -26,17 +23,21 @@ def post_request(url, params=None):
 def get_action(state):
     try:
         from openai import OpenAI
+        import os
+        import re
+
+        # 👇 check if env variables exist
+        if "API_BASE_URL" not in os.environ or "API_KEY" not in os.environ:
+            raise Exception("No API env found")
+
+        print("[LLM CALL]", flush=True)
 
         client = OpenAI(
-            base_url=os.environ.get("API_BASE_URL"),
-            api_key=os.environ.get("API_KEY")
+            base_url=os.environ["API_BASE_URL"],
+            api_key=os.environ["API_KEY"]
         )
 
-        prompt = f"""
-        Traffic in lanes: {state}
-        Which lane (0-3 should get green signal?
-        Return only a number.
-        """
+        prompt = f"Traffic: {state}. Choose lane (0-3). Return only number."
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -47,9 +48,10 @@ def get_action(state):
         output = response.choices[0].message.content
         return int(re.findall(r'\d+', output)[0])
 
-    except Exception:
-        # fallback (VERY IMPORTANT)
-        return int(state.index(max(state)))    
+    except Exception as e:
+        print("[FALLBACK USED]", str(e), flush=True)
+        return int(state.index(max(state)))
+        
 def run():
     print("[START] task=traffic", flush=True)
 
