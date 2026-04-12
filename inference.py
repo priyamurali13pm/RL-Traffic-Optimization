@@ -3,6 +3,8 @@ import urllib.request
 import urllib.parse
 import random
 import json
+import os
+import re
 
 BASE_URL = "https://priyamurali13pm-rl-traffic-optimization.hf.space"
 
@@ -20,6 +22,34 @@ def post_request(url, params=None):
     except urllib.error.HTTPError as e:
         print("[SERVER ERROR BODY]", e.read().decode(), flush=True)
         raise e
+
+def get_action(state):
+    try:
+        from openai import OpenAI
+
+        client = OpenAI(
+            base_url=os.environ.get("API_BASE_URL"),
+            api_key=os.environ.get("API_KEY")
+        )
+
+        prompt = f"""
+        Traffic in lanes: {state}
+        Which lane (0-3 should get green signal?
+        Return only a number.
+        """
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0
+        )
+
+        output = response.choices[0].message.content
+        return int(re.findall(r'\d+', output)[0])
+
+    except Exception:
+        # fallback (VERY IMPORTANT)
+        return int(state.index(max(state)))    
 def run():
     print("[START] task=traffic", flush=True)
 
@@ -36,8 +66,7 @@ def run():
             if random.random() < epsilon:
                 action = random.randint(0, len(state) - 1)
             else:
-                action = int(state.index(max(state)))
-
+                action = get_action(state)
             data = post_request(f"{BASE_URL}/step", {"action": action})
 
             state = data.get("observation", [0, 0, 0, 0])
